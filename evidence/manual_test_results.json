@@ -1,0 +1,94 @@
+[
+  {
+    "testId": "MANUAL-TC-01",
+    "name": "Empty Cart Checkout Validation & Input Preservation",
+    "steps": [
+      "1. Open checkout page at http://localhost:3000",
+      "2. Leave cart empty ($0.00, 0 items)",
+      "3. Enter \"Eleanor Vance\" in Full Name field and \"eleanor.vance@hillhouse.example\" in Email field",
+      "4. Click \"Place Order\" button"
+    ],
+    "expected": "Checkout is blocked. Alert banner displays \"Your cart is empty. Please add at least one product before placing your order.\" No confirmation is generated. Customer name and email remain intact.",
+    "actual": {
+      "alertDisplayed": true,
+      "alertMessageText": "Your cart is empty. Please add at least one product before placing your order.",
+      "confirmationDisplayed": false,
+      "namePreserved": true,
+      "emailPreserved": true,
+      "actualPreservedName": "Eleanor Vance",
+      "actualPreservedEmail": "eleanor.vance@hillhouse.example"
+    },
+    "passed": true,
+    "evidenceScreenshots": [
+      "evidence/manual_test_1_empty_cart_before_submit.png",
+      "evidence/manual_test_1_empty_cart_validation_shown.png"
+    ]
+  },
+  {
+    "testId": "MANUAL-TC-02",
+    "name": "Rapid Double-Click Idempotency & Duplicate Order Prevention",
+    "steps": [
+      "1. Open checkout page at http://localhost:3000 from clean state",
+      "2. Add Wireless Ergonomic Mouse ($35.00) to cart",
+      "3. Enter \"Marcus Holloway\" in Full Name field",
+      "4. Rapidly double-click \"Place Order\" button in quick succession (< 30ms interval)"
+    ],
+    "expected": "Only one order is processed. Exactly one confirmation is displayed with a single unique order reference. State confirmation count equals 1. No second order reference or duplicate UI is generated.",
+    "actual": {
+      "confirmationViewVisible": true,
+      "stateConfirmationCount": 1,
+      "domConfirmationHeadersCount": 1,
+      "orderReferenceGenerated": "ORD-RPQMJXR7",
+      "totalAmountPaid": "$35.00",
+      "checkoutFormHidden": true
+    },
+    "passed": true,
+    "evidenceScreenshots": [
+      "evidence/manual_test_2_ready_to_double_click.png",
+      "evidence/manual_test_2_single_confirmation_produced.png"
+    ]
+  },
+  {
+    "testId": "MANUAL-TC-03",
+    "name": "Whitespace / Blank Required Field Validation",
+    "steps": [
+      "1. Open checkout page at http://localhost:3000 from clean state",
+      "2. Add Mechanical Compact Keyboard ($75.00) to cart",
+      "3. Enter only whitespace (\"   \") into Full Name input and \"dev@test.local\" into Email",
+      "4. Click \"Place Order\" button"
+    ],
+    "expected": "Checkout is blocked. Inline field error shows \"Please enter your full name.\" aria-invalid is set to true. Confirmation is NOT displayed. Customer input is preserved.",
+    "actual": {
+      "nameErrorVisible": true,
+      "nameErrorText": "Please enter your full name.",
+      "ariaInvalid": "true",
+      "preservedWhitespaceInput": "   ",
+      "preservedEmail": "dev@test.local",
+      "confirmationDisplayed": false
+    },
+    "passed": true,
+    "evidenceScreenshots": [
+      "evidence/manual_test_3_missing_name_before_click.png",
+      "evidence/manual_test_3_missing_name_error_shown.png"
+    ]
+  },
+  {
+    "testId": "MANUAL-TC-04",
+    "name": "Dynamic Quantity Modification & Exact Arithmetic Calculations",
+    "steps": [
+      "1. Open checkout page at http://localhost:3000 from clean state",
+      "2. Add Wireless Ergonomic Mouse ($35.00) and Mechanical Keyboard ($75.00)",
+      "3. Increment Mouse quantity twice (from 1 to 3)"
+    ],
+    "expected": "Mouse line total is $105.00 (3 * $35.00), Keyboard line total is $75.00, Order Total is $180.00 ($105.00 + $75.00).",
+    "actual": {
+      "prod1LineTotal": "$105.00",
+      "prod2LineTotal": "$75.00",
+      "overallTotal": "$180.00"
+    },
+    "passed": true,
+    "evidenceScreenshots": [
+      "evidence/manual_test_4_quantity_change_and_totals.png"
+    ]
+  }
+]

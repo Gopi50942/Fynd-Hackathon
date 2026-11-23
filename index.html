@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickStore - Mini Checkout</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span>QuickStore</span>
+      </div>
+      <div class="badge">Single-Page Checkout</div>
+    </header>
+
+    <main class="main-content">
+      <!-- Global alert banner for cart/order errors -->
+      <div id="cart-alert" class="alert-banner hidden" role="alert" data-testid="cart-alert" aria-live="assertive">
+        <span class="alert-icon">⚠️</span>
+        <span id="cart-alert-message" class="alert-text"></span>
+      </div>
+
+      <!-- Checkout Container (Products + Cart & Details) -->
+      <div id="checkout-view" class="checkout-grid">
+        
+        <!-- Left Column: Products Catalog -->
+        <section class="panel products-panel" aria-labelledby="products-title">
+          <h2 id="products-title" class="panel-title">Available Products</h2>
+          <div class="product-cards" id="product-list" data-testid="product-list">
+            <!-- Product 1 -->
+            <article class="product-card" data-product-id="prod-1" data-testid="product-card-prod-1">
+              <div class="product-info">
+                <span class="product-category">Hardware</span>
+                <h3 class="product-name" data-testid="product-name-prod-1">Wireless Ergonomic Mouse</h3>
+                <p class="product-desc">Precision optical sensor, silent clicks, and contoured grip.</p>
+                <div class="product-price" data-testid="product-price-prod-1">$35.00</div>
+              </div>
+              <button 
+                type="button" 
+                class="btn btn-primary add-to-cart-btn" 
+                data-id="prod-1"
+                data-testid="add-prod-1-btn"
+                aria-label="Add Wireless Ergonomic Mouse to cart">
+                + Add to Cart
+              </button>
+            </article>
+
+            <!-- Product 2 -->
+            <article class="product-card" data-product-id="prod-2" data-testid="product-card-prod-2">
+              <div class="product-info">
+                <span class="product-category">Hardware</span>
+                <h3 class="product-name" data-testid="product-name-prod-2">Mechanical Compact Keyboard</h3>
+                <p class="product-desc">Custom tactile switches, durable PBT keycaps, compact 75% layout.</p>
+                <div class="product-price" data-testid="product-price-prod-2">$75.00</div>
+              </div>
+              <button 
+                type="button" 
+                class="btn btn-primary add-to-cart-btn" 
+                data-id="prod-2"
+                data-testid="add-prod-2-btn"
+                aria-label="Add Mechanical Compact Keyboard to cart">
+                + Add to Cart
+              </button>
+            </article>
+          </div>
+        </section>
+
+        <!-- Right Column: Cart & Customer Info Form -->
+        <div class="checkout-sidebar">
+          
+          <!-- Cart Section -->
+          <section class="panel cart-panel" aria-labelledby="cart-title">
+            <div class="panel-header">
+              <h2 id="cart-title" class="panel-title">Your Order Summary</h2>
+              <span id="cart-count-badge" class="count-badge" data-testid="cart-count">0 items</span>
+            </div>
+
+            <!-- Empty cart state -->
+            <div id="cart-empty-message" class="cart-empty" data-testid="cart-empty-message">
+              <p>Your cart is empty.</p>
+              <span class="subtext">Select an item on the left to get started.</span>
+            </div>
+
+            <!-- Cart items table/list -->
+            <div id="cart-items-container" class="cart-items-list hidden" data-testid="cart-items-list">
+              <!-- Dynamically populated cart items -->
+            </div>
+
+            <!-- Order Total section -->
+            <div class="cart-footer">
+              <div class="total-row">
+                <span class="total-label">Subtotal</span>
+                <span id="subtotal-amount" class="total-value" data-testid="subtotal-amount">$0.00</span>
+              </div>
+              <div class="total-row total-highlight">
+                <span class="total-label">Order Total</span>
+                <span id="order-total-amount" class="total-value highlight" data-testid="order-total">$0.00</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Customer Form Section -->
+          <section class="panel form-panel" aria-labelledby="customer-info-title">
+            <h2 id="customer-info-title" class="panel-title">Customer Details</h2>
+            
+            <form id="checkout-form" novalidate data-testid="checkout-form">
+              <!-- Required Field: Customer Name -->
+              <div class="form-group" id="group-customer-name">
+                <label for="customer-name" class="form-label">
+                  Full Name <span class="required-indicator" aria-hidden="true">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="customer-name" 
+                  name="customerName" 
+                  class="form-input" 
+                  placeholder="e.g. Alex Morgan" 
+                  autocomplete="name"
+                  data-testid="customer-name-input"
+                  aria-required="true"
+                  aria-describedby="name-error"
+                />
+                <div id="name-error" class="field-error hidden" role="alert" data-testid="name-error">
+                  Please enter your full name.
+                </div>
+              </div>
+
+              <!-- Optional Field: Email Address (proves field preservation) -->
+              <div class="form-group" id="group-customer-email">
+                <label for="customer-email" class="form-label">
+                  Email Address <span class="optional-label">(Optional)</span>
+                </label>
+                <input 
+                  type="email" 
+                  id="customer-email" 
+                  name="customerEmail" 
+                  class="form-input" 
+                  placeholder="alex@example.com" 
+                  autocomplete="email"
+                  data-testid="customer-email-input"
+                />
+              </div>
+
+              <!-- Checkout action button -->
+              <button 
+                type="submit" 
+                id="place-order-btn" 
+                class="btn btn-checkout" 
+                data-testid="place-order-btn">
+                <span class="btn-text">Place Order</span>
+                <span class="btn-spinner hidden" aria-hidden="true">⏳</span>
+              </button>
+            </form>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- Confirmation View (Shown on Successful Order) -->
+      <section 
+        id="confirmation-view" 
+        class="confirmation-panel hidden" 
+        data-testid="order-confirmation" 
+        aria-labelledby="confirmation-title"
+        role="region">
+        <div class="confirmation-card">
+          <div class="confirmation-icon" aria-hidden="true">✓</div>
+          <h2 id="confirmation-title" class="confirmation-heading" data-testid="confirmation-heading">
+            Order Confirmed!
+          </h2>
+          <p class="confirmation-subtext">
+            Thank you, <strong id="confirm-customer-name" data-testid="confirm-customer-name"></strong>! Your order has been placed.
+          </p>
+
+          <div class="confirmation-ref-box">
+            <span class="ref-label">Order Reference:</span>
+            <span id="confirm-order-ref" class="ref-code" data-testid="order-reference"></span>
+          </div>
+
+          <div class="confirmation-details">
+            <h3 class="details-heading">Items Summary</h3>
+            <div id="confirm-items-list" class="confirm-items-list" data-testid="confirm-items-list">
+              <!-- Dynamically populated items -->
+            </div>
+            
+            <div class="confirm-total-row">
+              <span class="total-label">Total Amount Paid:</span>
+              <span id="confirm-total-amount" class="total-amount" data-testid="confirm-total-amount">$0.00</span>
+            </div>
+          </div>
+
+          <div class="confirmation-actions">
+            <button 
+              type="button" 
+              id="start-new-order-btn" 
+              class="btn btn-secondary" 
+              data-testid="start-new-order-btn">
+              ← Place Another Order
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Mini Checkout Test Store &bull; Quality Engineering Demonstration</p>
+    </footer>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
